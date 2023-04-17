@@ -62,6 +62,7 @@
         var filter = dataset.filter(function(item) {
             return item.title.includes(ipt) || item.showInfo[0].location.includes(ipt) || item.showInfo[0].price.includes(ipt);
         });
+        
 
         var talpage = Math.ceil(filter.length / num);
         curpage += d;
