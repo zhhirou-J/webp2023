@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>景點觀光展覽資訊</title>
+  </head>
+  <body>
+    <h1>景點觀光展覽資訊</h1>
+    <input type="text" id="keywd" onchange="searchf(0)">
+    <table id="csie" class="table table-striped table-hover">
+        <tr>
+          <th>名稱</th>
+          <th>地點</th>
+          <th>票價</th>
+        </tr>
+    </table>
+    <div id="pages"></div>
+    <div id = "total"> </div>
+    <button onclick="searchf(-1)">上一頁</button>
+    <button onclick="searchf(1)">下一頁</button>
+    <script>
+      var openUrl = "https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=6"
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', openUrl, true);
+      xhr.send();
+      xhr.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status == 200){
+          dataset = JSON.parse(this.responseText);  
+          addNewData(dataset); 
+        }
+      };
+      function delOldData(){
+         var myTable = document.getElementById ("csie");
+         var rowCount = myTable.rows.length;
+         var i =rowCount-1;
+         if(i>0)
+         myTable.deleteRow(-1);
+       }
+      var curpage = 1;
+      var num = 10;
+      function addNewData(dataset){
+        var myTable = document.getElementById("csie");
+        var num_s = (curpage - 1) * num;
+        var num_e = num_s + num;
+        if(num_e > dataset.length){
+          num_e = dataset.length;
+        }
+        for(var i = num_s; i < num_e; i++){
+          var row = myTable.insertRow(-1);
+          row.insertCell(0).innerHTML = dataset[i]['title'];
+          row.insertCell(1).innerHTML = dataset[i]['showInfo'][0]['location'];
+          row.insertCell(2).innerHTML = dataset[i]['showInfo'][0]['price'];
+        }
+        var pages = document.getElementById("pages");
+        pages.innerText = curpage + "/" + Math.ceil(dataset.length / num);
+        var total = document.getElementById("total");
+        //total index
+        total.innerText = "總共" + dataset.length + "筆資料";
+    }
+      function searchf(d) {
+        var ipt = document.getElementById("keywd").value;
+        var filter = dataset.filter(function(item) {
+            return item.title.includes(ipt) || item.showInfo[0].location.includes(ipt) || item.showInfo[0].price.includes(ipt);
+        });
+        
+
+        var talpage = Math.ceil(filter.length / num);
+        curpage += d;
+        if(curpage < 1){
+          curpage = 1;
+        } else if(curpage > talpage){
+          curpage = talpage;
+        } else {
+          var myTable = document.getElementById("csie");
+            for(var i = 0; i < num; i++){
+              delOldData();
+            }
+          addNewData(filter);
+        }
+     }
+
+</script>
+</body>
+</html>
 
