@@ -20,15 +20,27 @@
     <button onclick="searchf(1)">下一頁</button>
     <script>
       var openUrl = "https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=6"
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', openUrl, true);
-      xhr.send();
-      xhr.onreadystatechange = function(){
-        if(this.readyState == 4 && this.status == 200){
-          dataset = JSON.parse(this.responseText);  
-          addNewData(dataset); 
-        }
-      };
+//       var xhr = new XMLHttpRequest();
+//       xhr.open('GET', openUrl, true);
+//       xhr.send();
+//       xhr.onreadystatechange = function(){
+//         if(this.readyState == 4 && this.status == 200){
+//           dataset = JSON.parse(this.responseText);  
+//           addNewData(dataset); 
+//         }
+//       };
+      fetch(openUrl)
+        .then(res => {
+        if (!res.ok) throw Error(res.statusText);
+          return res.json();
+        })
+        .then(data => {
+          dataset = data;
+          addNewData(dataset);
+        })
+        .then(response => console.log('Success:', response))
+
+        .catch(error => console.error(error));
       function delOldData(){
          var myTable = document.getElementById ("csie");
          var rowCount = myTable.rows.length;
